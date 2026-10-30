@@ -1,0 +1,11 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { loadConfig } from '../src/config/index.js';
+import { atomic, inside } from '../src/shared/util.js';
+import { verifyReview } from '../src/shared/acceptance.js';
+const ix = process.argv.indexOf('--file'); if (ix < 0 || !process.argv[ix+1]) throw Error('使用 --file 指定实际人工填写的 JSON 文件');
+const cfg = await loadConfig(); const root = inside(cfg.data_dir, 'acceptance');
+const raw = JSON.parse(await readFile(path.resolve(process.argv[ix+1]!), 'utf8')); const manifest = JSON.parse(await readFile(inside(root,'manifest.json'),'utf8'));
+const result = verifyReview(raw, manifest);
+await atomic(inside(root,'human-review.submitted.json'),JSON.stringify(raw,null,2)); await atomic(inside(root,'human-review-result.json'),JSON.stringify(result,null,2));
+process.stdout.write(JSON.stringify(result,null,2)+'\n'); if (!result.ok) process.exitCode=1;

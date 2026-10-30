@@ -1,0 +1,24 @@
+export const VERSION = '0.1.0';
+export const PARSER_VERSION = 'wechat-dom/1';
+export type ErrorCode = 'INVALID_INPUT' | 'UNSUPPORTED_CAPABILITY' | 'SOURCE_UNAVAILABLE' | 'AUTH_REQUIRED' | 'VERIFICATION_REQUIRED' | 'RATE_LIMITED' | 'ARTICLE_DELETED' | 'ACCESS_RESTRICTED' | 'PARSE_FAILED' | 'NETWORK_ERROR' | 'IDENTITY_AMBIGUOUS' | 'RESOURCE_NOT_FOUND' | 'CONFLICT' | 'CANCELLED';
+export type Failure = { code: ErrorCode; message: string; retryable: boolean; retry_after_seconds?: number; required_action?: string };
+export type Block = { block_id: string; type: 'heading' | 'paragraph' | 'list' | 'quote' | 'image' | 'table' | 'code' | 'audio_reference' | 'video_reference' | 'attachment_reference' | 'unsupported'; order: number; text: string; markdown: string; url?: string; reason?: string };
+export type Asset = { url: string; status: 'skipped' | 'complete' | 'failed'; local_path?: string; bytes?: number; error?: string };
+export type Article = {
+  article_id: string; account_id: string | null; biz: string | null; mid: string | null; idx: string | null;
+  discovered_url: string; canonical_url: string; title: string | null; account_name: string | null; author: string | null; description: string | null;
+  published_raw: string | null; published_at: string | null; provider: string; method: string;
+  discovered_at: string; fetched_at: string; content_version: string; content_hash: string; parser_version: string;
+  metadata_status: 'complete' | 'partial'; content_status: 'complete' | 'partial'; media_status: 'skipped' | 'complete' | 'partial' | 'failed';
+  warnings: string[]; blocks: Block[]; markdown: string; text: string; assets: Asset[];
+  external_links: { url: string; text: string; block_id: string }[];
+  metadata_reasons: Record<string, string>;
+};
+export type Draft = Article & { snapshot: string };
+export type FetchResult = { article: Article; cache_hit: boolean; stale: boolean; last_attempt?: { at: string; error: Failure }; fallback_reason?: string };
+export type Candidate = { candidate_id: string; title: string; discovered_url: string; summary: string; published_raw: string; metadata_verified: false; discovered_at: string; query: string; page: number; provider: string; browser_backend?: string };
+export type Coverage = { provider: string; mode: string; checked_count: number; returned_count: number; truncated: boolean; may_have_gaps: boolean; has_more: boolean | null; next_cursor: string | null; stop_reason: string };
+export type JobState = 'queued' | 'running' | 'waiting_auth' | 'waiting_verification' | 'waiting_source' | 'backoff' | 'paused' | 'interrupted' | 'completed' | 'completed_with_errors' | 'failed' | 'cancelled';
+export type Counts = { checked_count: number; accepted_count: number; success_count: number; partial_count: number; filtered_count: number; failed_count: number; duplicate_count: number; stale_count: number };
+export type JobItem = { index: number; input: string; status: string; article_id?: string; content_version?: string; stale?: boolean; attempts?: number; error?: Failure; reason?: string };
+export type Job = { job_id: string; kind: 'collection' | 'export'; state: JobState; config: Record<string, any>; created_at: string; updated_at: string; counts: Counts; coverage: Coverage; items: JobItem[]; checkpoint: Record<string, any>; elapsed_ms: number; result?: Record<string, any>; error?: Failure; next_attempt_at?: string };

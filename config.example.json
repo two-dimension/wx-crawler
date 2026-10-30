@@ -1,0 +1,10 @@
+{
+  "data_dir": "./data",
+  "export_dir": "./data/exports",
+  "browser": { "enabled": true, "session": "wechat-crawler", "backend": "managed_chrome", "headless": false, "channel": "chrome" },
+  "request": { "interval_ms": 3500, "timeout_seconds": 30, "browser_timeout_seconds": 60 },
+  "retry": { "max_retries": 2 },
+  "content": { "max_response_chars": 12000 },
+  "media": { "max_image_bytes": 10485760, "max_total_bytes_per_job": 104857600 },
+  "search_cache": { "ttl_seconds": 600 }
+}
